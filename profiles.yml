@@ -1,0 +1,19 @@
+config:
+  send_anonymous_usage_stats: False
+
+default:
+  outputs:
+
+    dev: # User-Password config
+      type: snowflake
+      account: your-snowflake-account-id-here
+      user: DBT_CLOUD_DEV
+      password: your-password-here
+      role: TRANSFORMER_DEV
+      database: DEV
+      warehouse: TRANSFORMING
+      schema: dbt_your-username-here
+      threads: 2
+      client_session_keep_alive: False
+
+  target: dev
