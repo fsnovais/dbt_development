@@ -2,7 +2,8 @@ version: 2
 
 sources:
   - name: stripe
-    database: dev
+    database: "dbt-tutorial" 
+    schema: "stripe" 
     tables:
       - name: payment
         loaded_at_field: _batched_at
