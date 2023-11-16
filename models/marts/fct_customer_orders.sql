@@ -39,9 +39,7 @@ with
                 partition by a.customer_id
             ) as customer_total_lifetime_value,
 
-            array_agg(distinct a.order_id) over(
-                partition by a.customer_id
-            )  as customer_order_ids
+            (select array_agg(distinct order_id) from unnest([a.order_id]) as order_id) as customer_order_ids
 
         from orders a
         inner join customers b
