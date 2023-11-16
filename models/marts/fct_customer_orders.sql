@@ -6,73 +6,69 @@ with
 
     customers as (select * from {{ ref("stg_jaffle_shop__customers") }}),
 
-    customer_order_history as (
-        (
+    customer_orders as (
+        select
+            a.*,
 
-            select
-                b.customer_id,
-                b.full_name,
-                b.surname,
-                b.givenname,
-                min(a.order_date) as first_order_date,
+            b.full_name,
+            b.surname,
+            b.givenname,
 
-                min(a.valid_order_date) as first_non_returned_order_date,
+            -- Customer Leevel agregation
+            min(a.order_date) over(
+                partition by a.customer_id
+            ) as customer_first_order_date,
 
-                max(a.valid_order_date) as most_recent_non_returned_order_date,
+            min(a.valid_order_date) over(
+                partition by a.customer_id
+            ) as customer_first_non_returned_order_date,
 
-                coalesce(max(a.user_order_seq), 0) as order_count,
+            max(a.valid_order_date) over(
+                partition by a.customer_id
+            ) as customer_most_recent_non_returned_order_date,
 
-                coalesce(
-                    count(case when a.valid_order_date is not null then 1 end), 0
-                ) as non_returned_order_count,
-                sum(
-                    case
-                        when a.valid_order_date is not null
-                        then a.order_value_dollars
-                        else 0
-                    end
-                ) as total_lifetime_value,
+            count(*) over(
+                partition by a.customer_id
+            ) as customer_order_count,
 
-                sum(
-                    case
-                        when a.valid_order_date is not null
-                        then a.order_value_dollars
-                        else 0
-                    end
-                ) / nullif(
-                    count(case when a.valid_order_date is not null then 1 end), 0
-                ) as avg_non_returned_order_value,
-                array_agg(distinct a.order_id) as order_ids
+            sum(if(a.valid_order_date is not null, 1, 0)) over(
+                partition by a.customer_id
+            ) as customer_non_returned_order_count,
 
-            from orders a
+            sum(if(a.valid_order_date is not null, a.order_value_dollars, 0)) over(
+                partition by a.customer_id
+            ) as customer_total_lifetime_value,
 
-            join customers b on a.customer_id = b.customer_id
+            array_agg(distinct a.order_id) over(
+                partition by a.customer_id
+            )  as customer_order_ids
 
-            group by b.customer_id, b.full_name, b.surname, b.givenname
+        from orders a
+        inner join customers b
+            on a.customer_id = b.customer_id
+    ),
+    add_avg_order_values as (
+        select *,
+        safe_divide(customer_total_lifetime_value, customer_non_returned_order_count) as customer_avg_non_returned_order_value
 
-        )
+        from customer_orders
     ),
     -- Final CTE
     final as (
         select
 
-            a.order_id,
-            a.customer_id,
-            b.surname,
-            b.givenname,
-            first_order_date,
-            order_count,
-            total_lifetime_value,
-            a.order_value_dollars,
-            a.order_status,
-            a.payment_status
+            order_id,
+            customer_id,
+            surname,
+            givenname,
+            customer_first_order_date as first_order_date,
+            customer_order_count as order_count,
+            customer_total_lifetime_value as total_lifetime_value,
+            order_value_dollars,
+            order_status,
+            payment_status
 
-        from orders a
-
-        join customers b on a.customer_id = b.customer_id
-
-        join
-            customer_order_history on a.customer_id = customer_order_history.customer_id
+        from add_avg_order_values
 
     )
 -- Simple Select Statement
