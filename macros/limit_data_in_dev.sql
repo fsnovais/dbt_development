@@ -2,6 +2,6 @@
     {% if target.name == "default" %}
         where
             {{ column_name }}
-            >= date_add(current_date(), interval {{ dev_days_of_data }} day)
+            >= date_add(current_date(), interval - {{ dev_days_of_data }} day)
     {% endif %}
 {% endmacro %}
