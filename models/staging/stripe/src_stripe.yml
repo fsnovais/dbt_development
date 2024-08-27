@@ -2,8 +2,10 @@ version: 2
 
 sources:
   - name: stripe
+    description: 'table used in dbt fundamentals course'
     database: "dbt-tutorial" 
-    schema: "stripe" 
+    schema: "stripe"
+    loader: "Describe the tool used to load this table to db"
     tables:
       - name: payment
         loaded_at_field: _batched_at

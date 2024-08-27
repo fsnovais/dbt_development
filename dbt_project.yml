@@ -2,8 +2,8 @@
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: 'jaffle_shop'
-version: '1.0.0'
+name: 'dbt_training'
+version: '1.0.1'
 config-version: 2
 
 # This setting configures which "profile" dbt uses for this project.
@@ -12,25 +12,41 @@ profile: 'default'
 # These configurations specify where dbt should look for different types of files.
 # The `source-paths` config, for example, states that models in this project can be
 # found in the "models/" directory. You probably won't need to change these!
-source-paths: ["models"]
+model-paths: ["models"]
+seed-paths: ["seeds"]
 analysis-paths: ["analysis"]
 test-paths: ["tests"]
-data-paths: ["data"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
+asset-paths: ["assets"]
+
+packages-install-path: "dbt_packages"
 
 target-path: "target"  # directory which will store compiled SQL files
 clean-targets:         # directories to be removed by `dbt clean`
     - "target"
     - "dbt_modules"
 
+# query-comment: "If you set your goals ridiculously high and it's a failure, you will fail above everyone else's success"
+#   append: true
 
-# Configuring models
-# Full documentation: https://docs.getdbt.com/docs/configuring-models
+query-comment: 
+  comment: "{{ query_comment(node) }}"
+  append: True
 
-# In this example config, we tell dbt to build all models in the example/ directory
-# as tables. These settings can be overridden in the individual model files
-# using the `{{ config(...) }}` macro.
+require-dbt-version: [">=1.0.0","<2.0.0"]
+
+flags:
+  debug: true
+
+dbt-cloud:
+  project-id: 311005
+
+quoting:
+  database: true
+  schema: true
+  identifier: true
+
 models:
   +materialized: table
   jaffle_shop:

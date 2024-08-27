@@ -1,0 +1,14 @@
+# metrics:
+#   - name: example_metric                     ## Required
+#     description: metric created to test the metrics functionality               ## Optional
+#     # Define the type of metric, which can be conversion, cumulative, derived, ratio, or simple.
+#     type: conversion                      ## Required
+#     type_params:                          ## Required
+#       - specific properties for the metric type
+#     config:                               ## Optional
+#       meta:
+#         my_meta_config:  'config'         ## Optional
+#     label: Display Example Name for Metric. ## Required
+#     filter: |                             ## Optional            
+#       {{  Dimension('entity__name') }} > 0 and {{ Dimension(' entity__another_name') }} is not
+#       null and {{ Metric('metric_name', group_by=['entity_name']) }} > 5

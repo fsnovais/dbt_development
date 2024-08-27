@@ -32,9 +32,9 @@ models:
         description: Foreign key to stg_customers.customer_id.
         tests:
           - relationships:
-            to: ref('stg_customers')
-            field: customer_id
-    name: stg_payments
+              to: ref('stg_customers')
+              field: customer_id
+  - name: stg_payments
     description: Staged payments data from our jaffle shop app.
     columns:
       - name: payment_id
