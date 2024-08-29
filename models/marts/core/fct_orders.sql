@@ -1,5 +1,12 @@
+{{
+    config(
+        materialized='table',
+        schema='reporting'
+    )
+}}
+
 with orders as  (
-    select * from {{ ref('stg_orders' )}}
+    select * from {{ ref('stg_orders', version=2) }}
 ),
 
 payments as (

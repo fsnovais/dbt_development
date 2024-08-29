@@ -3,17 +3,46 @@ version: 2
 models:
   - name: stg_customers
     description: Staged customer data from our jaffle shop app.
+
+    # contract
+    config:
+      contract:
+        enforced: true
+
+  # model-level constraints
+    constraints:
+      - type: primary_key
+        columns: [customer_id]
+      - type: check
+        columns: [first_name, last_name]
+        expression: "first_name != last_name"
+        name: name_comparisson
+
     columns: 
       - name: customer_id
         description: The primary key for customers
+        data_type: int
+        
+        #column-level constraints:
+        constraints:
+          - type: not_null
+          - type: unique
+
         tests:
           - unique
           - not_null
+      - name: first_name
+        data_type: string
+      - name: last_name
+        data_type: string
+
 
   - name: stg_orders
     description: Staged order data from our jaffle shop app.
+    latest_version: 2
     columns: 
       - name: status
+        data_type: string
         description: "{{ doc('order_status')}}"
         tests:
           - accepted_values:
@@ -34,11 +63,29 @@ models:
           - relationships:
               to: ref('stg_customers')
               field: customer_id
+    versions:
+      - v: 2
+        defined_in: stg_orders
+        columns:
+          - include: "*"
+          # can be "*" or "all"
+          - name: customer_id
+            description: Foreign key related to stg_customers.customer_id.
+            data_type: text
+      - v: 1
+        columns:
+          - include: []
+          - name: customer_id
+            data_type: int
+
   - name: stg_payments
     description: Staged payments data from our jaffle shop app.
+    config:
+      access: private
     columns:
       - name: payment_id
         description: Primary key for payments.
         tests:
           - unique
           - not_null
+      

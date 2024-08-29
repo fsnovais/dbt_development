@@ -1,0 +1,6 @@
+groups:
+  - name: finance
+    owner:
+      email: finance@jaffleshop.com
+      slack: finance-data
+      githup: finance-data-team

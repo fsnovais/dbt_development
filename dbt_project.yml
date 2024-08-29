@@ -47,11 +47,29 @@ quoting:
   schema: true
   identifier: true
 
+tests:
+  +group: finance
+
 models:
+  +persist_docs:
+    relation: true
+    columns: true
   +materialized: table
-  jaffle_shop:
-    marts:
-      core:
-        +materialized: table
-      staging:
-        +materialized: view
+  +group: finance
+  marts:
+    +tags:
+        - "hourly"
+        - "published"
+    core:
+      +materialized: table
+  staging:
+    +materialized: view
+    +tags:
+        - "daily"
+    jaffle_Shop:
+      +tags:
+        - "daily"
+  metrics:
+    +tags:
+        - "daily"
+        - "published"
