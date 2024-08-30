@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: rpt_customers
+    description: custom python model
+    config:
+      materialized: table
+      tags: ['python']
+  
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+              

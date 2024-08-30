@@ -1,0 +1,7 @@
+# semantic_models:
+#   - name: orders
+#     defaults:
+#       agg_time_dimension: order_date
+#     description: |
+#       Order fact table. This table’s grain is one row per order.
+#     model: ref('fct_orders')
