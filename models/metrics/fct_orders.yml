@@ -1,7 +1,31 @@
-# semantic_models:
-#   - name: orders
-#     defaults:
-#       agg_time_dimension: order_date
-#     description: |
-#       Order fact table. This table’s grain is one row per order.
-#     model: ref('fct_orders')
+semantic_models:
+  - name: orders
+    description: Order fact table. This table’s grain is one row per order.
+    model: ref('fct_orders')
+    defaults:
+      agg_time_dimension: order_date
+    entities: 
+      - name: order
+        expr: order_id
+        type: primary
+      - name: customer
+        expr: customer_id
+        type: foreign
+    dimensions:
+      - name: is_expensive_order
+        type: categorical
+        expr: case when amount > 100 then true else false end
+      - name: order_date
+        type: time
+        type_params:
+          time_granularity: day
+
+    measures:
+      - name: median_order_value
+        description: the median revenue generated for each order item
+        agg: median
+        expr: amount
+
+      - name: min_order_value
+        agg: min
+        expr: amount
